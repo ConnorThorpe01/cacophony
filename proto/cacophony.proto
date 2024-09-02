@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+service ChatService {
+
+  // User account management
+  rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse);
+  rpc Login (LoginRequest) returns (LoginResponse);
+
+  // Messaging
+  rpc SendMessage (SendMessageRequest) returns (SendMessageResponse);
+  rpc ReceiveMessage (ReceiveMessageRequest) returns (stream Message);
+
+  // Group management
+  rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse);
+  rpc AddUserToGroup (AddUserToGroupRequest) returns (AddUserToGroupResponse);
+  rpc SendGroupMessage (SendGroupMessageRequest) returns (SendGroupMessageResponse);
+  rpc ReceiveGroupMessage (ReceiveGroupMessageRequest) returns (stream GroupMessage);
+}
+
+// User Account Messages
+message CreateAccountRequest {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+}
+
+message CreateAccountResponse {
+  string userId = 1;
+  string message = 2;
+  bool success = 3;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string userId = 1;
+  string token = 2;
+  bool success = 3;
+}
+
+// Messaging
+message SendMessageRequest {
+  string fromUserId = 1;
+  string toUserId = 2;
+  string content = 3;
+}
+
+message SendMessageResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ReceiveMessageRequest {
+  string userId = 1;
+  string token = 2;
+}
+
+message Message {
+  string fromUserId = 1;
+  string content = 2;
+  int64 timestamp = 3;
+}
+
+// Group Management
+message CreateGroupRequest {
+  string groupName = 1;
+  string ownerUserId = 2;
+}
+
+message CreateGroupResponse {
+  string groupId = 1;
+  string message = 2;
+  bool success = 3;
+}
+
+message AddUserToGroupRequest {
+  string groupId = 1;
+  string userId = 2;
+}
+
+message AddUserToGroupResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message SendGroupMessageRequest {
+  string fromUserId = 1;
+  string groupId = 2;
+  string content = 3;
+}
+
+message SendGroupMessageResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ReceiveGroupMessageRequest {
+  string groupId = 1;
+  string userId = 2;
+  string token = 3;
+}
+
+message GroupMessage {
+  string fromUserId = 1;
+  string content = 2;
+  int64 timestamp = 3;
+}

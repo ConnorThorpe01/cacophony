@@ -1,0 +1,62 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# Vendor directory (optional)
+vendor/
+
+# Dependency directories (optional, if using vendoring)
+Godeps/
+
+# Editor backups
+*~
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Goland specific files
+*.iml
+*.ipr
+*.iws
+.idea/modules.xml
+.idea/workspace.xml
+.idea/.idea/
+
+# Go build artifacts
+bin/
+build/
+dist/
+*.log
+*.lock
+*.pid
+
+# Logs and databases
+*.sqlite
+*.db
+*.sqlite3
+*.log.*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Configuration files
+.env
+.env.local
+.env.test
+.env.production
+
+# Go coverage
+coverage.out

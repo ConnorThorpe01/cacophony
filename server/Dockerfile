@@ -13,22 +13,20 @@ WORKDIR /app/cacophony/server
 # Download dependencies
 RUN go mod download
 
-# Build the server binary
-RUN go build -o server
+# Build the server binary with CGO disabled for static linking
+RUN CGO_ENABLED=0 GOOS=linux go build -o s
 
 # Stage 2: Create a lightweight container with only the binary using Alpine Linux
 FROM alpine:3.18
 
-# Install any necessary dependencies (e.g., ca-certificates for SSL)
-#RUN apk --no-cache add ca-certificates
-
 # Copy only the server binary from the builder stage
-COPY --from=builder /app/cacophony/server /server
+COPY --from=builder /app/cacophony/server/s /s
 
 # Expose port 8080 for the server
 EXPOSE 8080
 
-RUN chmod +x ./server/server
+# Ensure the binary has executable permissions
+RUN chmod +x /s
 
 # Run the server binary
-CMD ["server"]
+CMD ["/s"]

@@ -60,3 +60,6 @@ Thumbs.db
 
 # Go coverage
 coverage.out
+
+#go sum files
+go.sum

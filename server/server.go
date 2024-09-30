@@ -3,6 +3,7 @@ package main
 import (
 	cacophony "cacophony/proto"
 	"context"
+	"database/sql"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -10,6 +11,7 @@ import (
 
 type server struct {
 	cacophony.UnimplementedChatServiceServer
+	db *sql.DB
 }
 
 func (s *server) CreateAccount(c context.Context, r *cacophony.CreateAccountRequest) (*cacophony.CreateAccountResponse, error) {

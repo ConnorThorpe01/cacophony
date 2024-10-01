@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   server:
+    restart: on-failure
     build:
       context: ..
       dockerfile: ./cacophony/server/Dockerfile
@@ -20,12 +21,15 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${CACOPHONY_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${CACOPHONY_DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${CACOPHONY_DB_NAME}
+      MYSQL_USER: ${CACOPHONY_DB_USER}
+      MYSQL_PASSWORD: ${CACOPHONY_DB_PASSWORD}
     ports:
       - "${CACOPHONY_DB_PORT}:3306"
     volumes:
       - CACOPHONY_data:/var/lib/mysql
+
 
 volumes:
   CACOPHONY_data:

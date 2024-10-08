@@ -63,3 +63,5 @@ coverage.out
 
 #go sum files
 go.sum
+
+*.pb.go

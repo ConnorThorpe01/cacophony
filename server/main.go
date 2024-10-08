@@ -7,6 +7,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"os"
@@ -46,6 +47,8 @@ func main() {
 	s := grpc.NewServer()
 	cacophony.RegisterChatServiceServer(s, &server{db: db})
 	log.Printf("server listening at %v", lis.Addr())
+
+	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

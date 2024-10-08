@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"server/auth"
 	"server/db"
 	"time"
 )
@@ -19,7 +20,7 @@ type server struct {
 	db *sql.DB
 }
 
-var jwtSecret = []byte("secret-key")
+var jwtSecret = []byte(os.Getenv("JWT_KEY"))
 
 func (s *server) CreateAccount(c context.Context, r *cacophony.CreateAccountRequest) (*cacophony.CreateAccountResponse, error) {
 	uuid, err := uuid2.NewUUID()
@@ -83,6 +84,11 @@ func (s *server) Login(c context.Context, r *cacophony.LoginRequest) (*cacophony
 	return response, nil
 }
 func (s *server) SendMessage(c context.Context, r *cacophony.SendMessageRequest) (*cacophony.SendMessageResponse, error) {
+	userID, err := auth.ValidateJWT(r.Token, jwtSecret)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "error validating JWT token")
+	}
+
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
 }
 func (s *server) ReceiveMessage(r *cacophony.ReceiveMessageRequest, m grpc.ServerStreamingServer[cacophony.Message]) error {

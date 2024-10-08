@@ -28,7 +28,7 @@ message CreateAccountRequest {
 }
 
 message CreateAccountResponse {
-  string userId = 1;
+  string token = 1;
   string message = 2;
   bool success = 3;
 }
@@ -39,14 +39,13 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string userId = 1;
-  string token = 2;
-  bool success = 3;
+  string token = 1;
+  bool success = 2;
 }
 
 // Messaging
 message SendMessageRequest {
-  string fromUserId = 1;
+  string token = 1;
   string toUserId = 2;
   string content = 3;
 }
@@ -57,7 +56,6 @@ message SendMessageResponse {
 }
 
 message ReceiveMessageRequest {
-  string userId = 1;
   string token = 2;
 }
 
@@ -70,7 +68,7 @@ message Message {
 // Group Management
 message CreateGroupRequest {
   string groupName = 1;
-  string ownerUserId = 2;
+  string token = 2;
 }
 
 message CreateGroupResponse {
@@ -80,8 +78,9 @@ message CreateGroupResponse {
 }
 
 message AddUserToGroupRequest {
-  string groupId = 1;
-  string userId = 2;
+  string token = 1;
+  string groupId = 2;
+  string userId = 3;
 }
 
 message AddUserToGroupResponse {
@@ -90,7 +89,7 @@ message AddUserToGroupResponse {
 }
 
 message SendGroupMessageRequest {
-  string fromUserId = 1;
+  string token = 1;
   string groupId = 2;
   string content = 3;
 }
@@ -102,7 +101,6 @@ message SendGroupMessageResponse {
 
 message ReceiveGroupMessageRequest {
   string groupId = 1;
-  string userId = 2;
   string token = 3;
 }
 

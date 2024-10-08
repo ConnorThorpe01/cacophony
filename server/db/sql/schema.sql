@@ -2,7 +2,8 @@ USE CACOPHONY_DB;
 
 CREATE TABLE IF NOT EXISTS users (
      user_id VARCHAR(36) PRIMARY KEY,
-     username VARCHAR(256) NOT NULL,
+     username VARCHAR(256) NOT NULL UNIQUE,
+     email varchar(256) NOT NULL UNIQUE,
      password VARCHAR(256) NOT NULL
 );
 

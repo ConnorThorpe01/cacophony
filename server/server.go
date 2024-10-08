@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"server/auth"
+	"os"
 	"server/db"
 	"time"
 )
@@ -84,10 +84,10 @@ func (s *server) Login(c context.Context, r *cacophony.LoginRequest) (*cacophony
 	return response, nil
 }
 func (s *server) SendMessage(c context.Context, r *cacophony.SendMessageRequest) (*cacophony.SendMessageResponse, error) {
-	userID, err := auth.ValidateJWT(r.Token, jwtSecret)
-	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "error validating JWT token")
-	}
+	// userID, err := auth.ValidateJWT(r.Token, jwtSecret)
+	//if err != nil {
+	//	return nil, status.Errorf(codes.Unauthenticated, "error validating JWT token")
+	//}
 
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
 }

@@ -57,7 +57,7 @@ func (s *server) CreateAccount(c context.Context, r *cacophony.CreateAccountRequ
 	return response, nil
 }
 func (s *server) Login(c context.Context, r *cacophony.LoginRequest) (*cacophony.LoginResponse, error) {
-	hash_pass, userID, err := db.Login(s.db, r.Username)
+	userID, hash_pass, err := db.Login(s.db, r.Username)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "incorrect password and/or username")
 	}

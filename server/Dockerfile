@@ -28,5 +28,5 @@ EXPOSE 8080
 # Ensure the binary has executable permissions
 RUN chmod +x /s
 
-# Run the server binary
-CMD ["/s"]
+CMD ["/bin/sh", "-c", "echo 'Waiting for MySQL to be ready...'; sleep 10; /s"]
+

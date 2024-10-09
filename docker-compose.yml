@@ -15,8 +15,12 @@ services:
       - DB_PASSWORD=${CACOPHONY_DB_PASSWORD}
       - DB_NAME=${CACOPHONY_DB_NAME}
       - JWT_KEY=${JWT_KEY}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     depends_on:
       - mysql
+      - redis
 
   mysql:
     image: mysql:8.0
@@ -31,6 +35,13 @@ services:
     volumes:
       - CACOPHONY_data:/var/lib/mysql
 
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
 
 volumes:
   CACOPHONY_data:

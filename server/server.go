@@ -56,12 +56,13 @@ func (s *server) CreateAccount(c context.Context, r *cacophony.CreateAccountRequ
 	}
 	return response, nil
 }
+
 func (s *server) Login(c context.Context, r *cacophony.LoginRequest) (*cacophony.LoginResponse, error) {
-	hash_pass, userID, err := db.Login(s.db, r.Username)
+	userID, hashPass, err := db.Login(s.db, r.Username)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "incorrect password and/or username")
 	}
-	if bcrypt.CompareHashAndPassword([]byte(hash_pass), []byte(r.Password)) != nil {
+	if bcrypt.CompareHashAndPassword([]byte(hashPass), []byte(r.Password)) != nil {
 		return nil, status.Errorf(codes.PermissionDenied, "incorrect password and/or username")
 	}
 	claims := jwt.MapClaims{

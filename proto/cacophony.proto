@@ -16,8 +16,6 @@ service ChatService {
   // Group management
   rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse);
   rpc AddUserToGroup (AddUserToGroupRequest) returns (AddUserToGroupResponse);
-  rpc SendGroupMessage (SendGroupMessageRequest) returns (SendGroupMessageResponse);
-  rpc ReceiveGroupMessage (ReceiveGroupMessageRequest) returns (stream GroupMessage);
 }
 
 // User Account Messages
@@ -46,8 +44,8 @@ message LoginResponse {
 // Messaging
 message SendMessageRequest {
   string token = 1;
-  string toUserId = 2;
-  string content = 3;
+  uint64 conversationID = 2;
+  Message message = 3;
 }
 
 message SendMessageResponse {
@@ -86,26 +84,4 @@ message AddUserToGroupRequest {
 message AddUserToGroupResponse {
   bool success = 1;
   string message = 2;
-}
-
-message SendGroupMessageRequest {
-  string token = 1;
-  string groupId = 2;
-  string content = 3;
-}
-
-message SendGroupMessageResponse {
-  bool success = 1;
-  string message = 2;
-}
-
-message ReceiveGroupMessageRequest {
-  string groupId = 1;
-  string token = 3;
-}
-
-message GroupMessage {
-  string fromUserId = 1;
-  string content = 2;
-  int64 timestamp = 3;
 }

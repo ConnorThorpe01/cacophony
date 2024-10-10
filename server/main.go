@@ -64,7 +64,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	cacophony.RegisterChatServiceServer(s, &server{db: sqlDB})
+	cacophony.RegisterChatServiceServer(s, &server{sqlDB: sqlDB, rDB: rdb})
 	log.Printf("server listening at %v", lis.Addr())
 
 	reflection.Register(s)

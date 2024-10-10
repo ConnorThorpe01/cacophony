@@ -1,6 +1,7 @@
 package db
 
 import (
+	cacophony "cacophony/proto"
 	"database/sql"
 	"github.com/google/uuid"
 	"log"
@@ -98,4 +99,46 @@ func Login(db *sql.DB, username string) (string, string, error) {
 	}
 
 	return userID, password, nil
+}
+
+func StoreMessage(db *sql.DB, m *cacophony.Message, conversationID uint64) (int, error) {
+	query := "INSERT INTO messages (user_id, conversation_id, message) VALUES (?, ?, ?)"
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println("Error starting transaction:", err)
+		return -1, err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			log.Println("Transaction rolled back due to panic:", p)
+		} else if err != nil {
+			tx.Rollback()
+			log.Println("Transaction rolled back due to error:", err)
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(m.FromUserId, conversationID, m.Content)
+	if err != nil {
+		return 0, err
+	}
+
+	messageID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(messageID), nil
 }

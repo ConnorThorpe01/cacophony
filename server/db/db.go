@@ -130,7 +130,7 @@ func StoreMessage(db *sql.DB, m *cacophony.Message, conversationID uint64) (int,
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(m.FromUserId, conversationID, m.Content)
+	result, err := stmt.Exec(m.Sender, conversationID, m.Content)
 	if err != nil {
 		return 0, err
 	}
@@ -141,4 +141,55 @@ func StoreMessage(db *sql.DB, m *cacophony.Message, conversationID uint64) (int,
 	}
 
 	return int(messageID), nil
+}
+
+func GetGroup(db *sql.DB, userID string) ([]string, error) {
+	query := "SELECT group_id FROM user_subscriptions where user_id = ?"
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println("Error starting transaction:", err)
+		return nil, err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			log.Println("Transaction rolled back due to panic:", p)
+		} else if err != nil {
+			tx.Rollback()
+			log.Println("Transaction rolled back due to error:", err)
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				log.Println("Error committing transaction:", err)
+			}
+		}
+	}()
+
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Query(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var s []string
+
+	for result.Next() {
+		var id string
+		err := result.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+		s = append(s, id)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return s, nil
 }

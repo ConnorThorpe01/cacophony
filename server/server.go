@@ -113,7 +113,7 @@ func (s *server) ChatStream(stream cacophony.ChatService_ChatStreamServer) error
 
 	go s.subscribeToRedisChannel(fmt.Sprintf("user:%s", clientUserId), stream)
 
-	groupIds := getUserGroupIds(clientUserId)
+	groupIds := s.getUserGroupIds(clientUserId)
 	for _, groupId := range groupIds {
 		go s.subscribeToRedisChannel(fmt.Sprintf("group:%s", groupId), stream)
 	}
@@ -141,7 +141,13 @@ func (s *server) ChatStream(stream cacophony.ChatService_ChatStreamServer) error
 	}
 }
 
-func getUserGroupIds(id string) []string {
+func (s *server) getUserGroupIds(id string) []string {
+	groups, err := db.GetGroup(s.sqlDB, id)
+	if err != nil {
+		log.Printf("Error:%s encountered while geting user groups", err)
+		return nil
+	}
+	return groups
 
 }
 

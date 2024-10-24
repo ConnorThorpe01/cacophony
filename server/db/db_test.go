@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	_ "database/sql"
+	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -267,5 +268,90 @@ func TestLogin_ScanFailure(t *testing.T) {
 	assert.Equal(t, "", userID)
 	assert.Equal(t, "", password)
 
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+// Test for valid user ID with groups
+func TestGetGroup_ValidUserWithGroups(t *testing.T) {
+	// Mock the database connection and response
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	rows := sqlmock.NewRows([]string{"group_id"}).
+		AddRow("group1").
+		AddRow("group2").
+		AddRow("group3")
+
+	// Mock the query execution
+	mock.ExpectBegin()
+	mock.ExpectPrepare("SELECT group_id FROM user_subscriptions where user_id = ?").
+		ExpectQuery().
+		WithArgs("valid_user").
+		WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	// Call the function
+	groups, err := GetGroup(db, "valid_user")
+
+	// Check the results
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"group1", "group2", "group3"}, groups)
+
+	// Ensure all expectations are met
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+// Test for valid user ID with no groups
+func TestGetGroup_ValidUserNoGroups(t *testing.T) {
+	// Mock the database connection and response
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	// Mock an empty result set (user has no groups)
+	rows := sqlmock.NewRows([]string{"group_id"})
+
+	mock.ExpectBegin()
+	mock.ExpectPrepare("SELECT group_id FROM user_subscriptions where user_id = ?").
+		ExpectQuery().
+		WithArgs("valid_user").
+		WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	// Call the function
+	groups, err := GetGroup(db, "valid_user")
+
+	// Check the results
+	assert.NoError(t, err)
+	assert.Empty(t, groups)
+
+	// Ensure all expectations are met
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+// Test for invalid user ID (error scenario)
+func TestGetGroup_InvalidUserID(t *testing.T) {
+	// Mock the database connection and response
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer db.Close()
+
+	// Simulate an error when the query is executed
+	mock.ExpectBegin()
+	mock.ExpectPrepare("SELECT group_id FROM user_subscriptions where user_id = ?").
+		ExpectQuery().
+		WithArgs("invalid_user").
+		WillReturnError(errors.New("user not found"))
+	mock.ExpectRollback()
+
+	// Call the function
+	groups, err := GetGroup(db, "invalid_user")
+
+	// Check the results
+	assert.Error(t, err)
+	assert.Nil(t, groups)
+
+	// Ensure all expectations are met
 	assert.NoError(t, mock.ExpectationsWereMet())
 }

@@ -16,17 +16,17 @@ CREATE TABLE IF NOT EXISTS friends (
     UNIQUE(user_id_1, user_id_2)
 );
 
-CREATE TABLE IF NOT EXISTS conversation (
-    conversation_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    conversation_name VARCHAR(256)
+CREATE TABLE IF NOT EXISTS `group` (
+    group_id VARCHAR(36) PRIMARY KEY,
+    group_name VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS user_subscriptions (
     user_subscriptions_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     user_id VARCHAR(36),
-    conversation_id INT UNSIGNED,
+    group_id VARCHAR(36),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id)
+    FOREIGN KEY (group_id) REFERENCES `group`(group_id)
 );
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS messages (
     message TEXT NOT NULL,
     edited BOOL DEFAULT FALSE,
     user_id VARCHAR(36) NOT NULL,
-    conversation_id INT UNSIGNED NOT NULL,
+    to_id VARCHAR(36),
+    group_id VARCHAR(36),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (conversation_id) REFERENCES conversation(conversation_id)
+    FOREIGN KEY (group_id) REFERENCES `group`(group_id)
 );

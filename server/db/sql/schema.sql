@@ -7,6 +7,15 @@ CREATE TABLE IF NOT EXISTS users (
      password VARCHAR(256) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS friends (
+    friends_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id_1 VARCHAR(36),
+    user_id_2 VARCHAR(36),
+    FOREIGN KEY (user_id_1) REFERENCES users(user_id),
+    FOREIGN KEY (user_id_2) REFERENCES users(user_id),
+    UNIQUE(user_id_1, user_id_2)
+);
+
 CREATE TABLE IF NOT EXISTS conversation (
     conversation_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     conversation_name VARCHAR(256)

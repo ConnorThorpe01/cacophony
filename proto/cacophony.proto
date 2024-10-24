@@ -4,18 +4,10 @@ package cacophony;
 option go_package = "cacophony/cacophony";
 
 service ChatService {
-
+  rpc ChatStream(stream Message) returns (stream Message);
   // User account management
   rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
-
-  // Messaging
-  rpc SendMessage (SendMessageRequest) returns (SendMessageResponse);
-  rpc ReceiveMessage (ReceiveMessageRequest) returns (stream Message);
-
-  // Group management
-  rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse);
-  rpc AddUserToGroup (AddUserToGroupRequest) returns (AddUserToGroupResponse);
 }
 
 // User Account Messages
@@ -41,26 +33,23 @@ message LoginResponse {
   bool success = 2;
 }
 
-// Messaging
-message SendMessageRequest {
-  string token = 1;
-  uint64 conversationID = 2;
-  Message message = 3;
+enum ReceiverType {
+  USER = 0;
+  GROUP = 1;
 }
 
-message SendMessageResponse {
+message MessageErr {
   bool success = 1;
-  string message = 2;
+  string error = 2;
 }
 
-message ReceiveMessageRequest {
-  string token = 2;
-}
 
 message Message {
-  string fromUserId = 1;
-  string content = 2;
-  int64 timestamp = 3;
+  string sender = 1;
+  string receiver = 2;   // Could represent either a user or group ID
+  ReceiverType receiverType = 3;  // New field to distinguish between user and group
+  string content = 4;
+  int64 timestamp = 5;
 }
 
 // Group Management

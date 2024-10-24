@@ -35,8 +35,10 @@ CREATE TABLE IF NOT EXISTS messages (
     message TEXT NOT NULL,
     edited BOOL DEFAULT FALSE,
     user_id VARCHAR(36) NOT NULL,
-    to_id VARCHAR(36),
-    group_id VARCHAR(36),
+    to_user_id VARCHAR(36),
+    to_group_id VARCHAR(36),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (group_id) REFERENCES `group`(group_id)
+    FOREIGN KEY (to_user_id) REFERENCES users(user_id),
+    FOREIGN KEY (to_group_id) REFERENCES `group`(group_id)
 );
+

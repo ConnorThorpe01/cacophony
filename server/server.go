@@ -4,6 +4,7 @@ import (
 	cacophony "cacophony/proto"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v4"
@@ -199,6 +200,41 @@ func (s *server) subscribeToRedisChannel(channel string, stream cacophony.ChatSe
 			log.Printf("Error sending message to client: %v", err)
 			return
 		}
+	}
+}
+
+func (s *server) Friend(c context.Context, r *cacophony.FriendRequest) (*cacophony.FriendResponse, error) {
+	token, err := extractJWT(c)
+	if err != nil {
+		return nil, errors.New("failed to extract user token from context")
+	}
+	claims, ok := extractClaims(token)
+	if !ok {
+		return nil, errors.New("failed to extract claims from token")
+	}
+	clientId, ok := claims["user_id"]
+	userId, err := db.Friend(s.sqlDB, r.Username, clientId)
+
+	return nil, nil
+}
+
+func extractClaims(tokenStr string) (jwt.MapClaims, bool) {
+	hmacSecretString := os.Getenv("JWT_KEY")
+	hmacSecret := []byte(hmacSecretString)
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		// check token signing method etc
+		return hmacSecret, nil
+	})
+
+	if err != nil {
+		return nil, false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, true
+	} else {
+		log.Printf("Invalid JWT Token")
+		return nil, false
 	}
 }
 
